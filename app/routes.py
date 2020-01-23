@@ -24,7 +24,6 @@ def get_data_by_id():
     id = request.args.get('id')
     listOfData = Reader.getListOfData()
     for x in listOfData:
-        print(f'\t{x}.')
         if x["id"] == id:
            return json.dumps(x)
     return json.dumps({"error": "broken id"})
