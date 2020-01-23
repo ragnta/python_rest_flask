@@ -1,0 +1,11 @@
+tr:nth-child(2n){
+ background-color: aqua;
+}
+
+tr:nth-child(2n+1){
+    border-color: aqua;
+}
+
+#resultBox{
+    width:20%;
+}
