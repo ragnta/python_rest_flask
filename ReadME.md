@@ -7,6 +7,8 @@ prerequisite
 
 run:
 
+pipenv install
+
 pipenv shell
 
 export FLASK_APP=app/restinit.py
