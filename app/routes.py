@@ -1,7 +1,8 @@
 from app import app
-from flask import json, request
+from flask import json, request, jsonify
 from flask_cors import CORS, cross_origin
 from .reader import Reader
+from .controllers import Admin
 # this file contains every route. It defines a REST interface for communicate with the client (eg.: browser)
 # cors see https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 cors = CORS(app)
@@ -10,7 +11,8 @@ cors = CORS(app)
 @cross_origin()
 @app.route('/availabledata',  methods=['GET'])
 def get_availabledata():
-    return json.dumps(Reader.getListOfData())
+    all_vehicles = [x.asdict() for x in app.admincontrol.getAllElement()]
+    return json.dumps(all_vehicles)
 
 @cross_origin()
 @app.route('/postnewdata',  methods=['POST'])
