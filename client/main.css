@@ -9,3 +9,14 @@ tr:nth-child(2n+1){
 #resultBox{
     width:20%;
 }
+
+.button{
+    background-color: #CCC;
+    width: 100px;
+    border-radius: 3px;
+    border-color: brown;
+}
+
+.button.active{
+    background-color: chartreuse;
+}

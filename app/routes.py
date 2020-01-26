@@ -2,10 +2,14 @@ from app import app
 from flask import json, request, jsonify
 from flask_cors import CORS, cross_origin
 from .reader import Reader
-from .controllers import Admin
+
 # this file contains every route. It defines a REST interface for communicate with the client (eg.: browser)
 # cors see https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
 cors = CORS(app)
+
+@app.route('/',  methods=['GET'])
+def index():
+    return app.send_static_file('index.html')
 
 # you can get all data by http://<ipadress>:<port:default:5000>/availabledata
 @cross_origin()
