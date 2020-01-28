@@ -44,7 +44,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
-        self.wfile.write(json.dumps([x.asdict() for x in madController.getAllMedicienes()] ))
+        self.wfile.write(json.dumps([x.asdict() for x in madController.getAllMedicienes()] ).encode())
     if None != re.search('/api/getbyId/*', self.path):
         record_id = self.path.split('/')[-1]
         medicine = madController.getMedicineById(record_id)
@@ -52,13 +52,8 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_header('Content-Type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
-        self.wfile.write(json.dumps(medicine.asdict() )
+        self.wfile.write(json.dumps(medicine.asdict()).encode() )
     return
-    
-    def end_headers (self):
-        self.send_header('Access-Control-Allow-Origin', '*')
-        BaseHTTPRequestHandler.end_headers(self)
-        return
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   allow_reuse_address = True
