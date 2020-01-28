@@ -3,6 +3,7 @@ from socketserver import ThreadingMixIn
 import threading
 import argparse
 import re
+import json
 import cgi
 from .app import madController
 
@@ -34,14 +35,14 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
-        self.wfile.write([x.asdict() for x in madController.getAllMedicienes()] )
+        self.wfile.write(json.dumps([x.asdict() for x in madController.getAllMedicienes()] ))
     if None != re.search('/api/getbyId/*', self.path):
         record_id = self.path.split('/')[-1]
         medicine = madController.getMedicineById(record_id)
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
-        self.wfile.write(medicine.asdict() )
+        self.wfile.write(json.dumps(medicine.asdict()) )
     return
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
