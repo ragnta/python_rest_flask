@@ -1,8 +1,9 @@
-from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-from SocketServer import ThreadingMixIn
+from http.server import BaseHTTPRequestHandler,HTTPServer
+from socketserver import ThreadingMixIn
 import threading
 import argparse
 import re
+import json
 import cgi
 from app import madController
 
@@ -10,6 +11,15 @@ class LocalData(object):
   records = {}
 
 class HTTPRequestHandler(BaseHTTPRequestHandler):
+  def do_OPTIONS(self):
+        self.send_response(200, "ok")
+        self.send_header('Access-Control-Allow-Credentials', 'true')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header("Access-Control-Allow-Headers", "X-Requested-With, Content-type")
+        return
+        
+  
   def do_POST(self):
     if None != re.search('/api/v1/addrecord/*', self.path):
       ctype, pdict = cgi.parse_header(self.headers.getheader('content-type'))
@@ -18,7 +28,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         data = cgi.parse_qs(self.rfile.read(length), keep_blank_values=1)
         recordID = self.path.split('/')[-1]
         LocalData.records[recordID] = data
-        print "record %s is added successfully" % recordID
+        print ("record %s is added successfully" % recordID)
       else:
         data = {}
       self.send_response(200)
@@ -34,15 +44,21 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
         self.end_headers()
-        self.wfile.write([x.asdict() for x in madController.getAllMedicienes()] )
+        self.wfile.write(json.dumps([x.asdict() for x in madController.getAllMedicienes()] ))
     if None != re.search('/api/getbyId/*', self.path):
         record_id = self.path.split('/')[-1]
         medicine = madController.getMedicineById(record_id)
         self.send_response(200)
         self.send_header('Content-Type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
-        self.wfile.write(medicine.asdict() )
+        self.wfile.write(json.dumps(medicine.asdict() )
     return
+    
+    def end_headers (self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        BaseHTTPRequestHandler.end_headers(self)
+        return
 
 class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
   allow_reuse_address = True
@@ -71,12 +87,13 @@ class SimpleHttpServer():
     self.waitForThread()
 
 if __name__=='__main__':
+
   parser = argparse.ArgumentParser(description='HTTP Server')
   parser.add_argument('port', type=int, help='Listening port for HTTP Server')
   parser.add_argument('ip', help='HTTP Server IP')
   args = parser.parse_args()
 
   server = SimpleHttpServer(args.ip, args.port)
-  print 'HTTP Server Running...........'
+  print ('HTTP Server Running...........')
   server.start()
   server.waitForThread()
