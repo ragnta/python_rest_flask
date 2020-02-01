@@ -11,8 +11,9 @@ class Medicine:
     def asdict(self):
         return {
         "id": self.__idNumber, 
-        "name": self.__barCode, 
+        "barCode": self.__barCode, 
         "shortBar": self.__shortBar,
          "name": self.__name,
          "dosage": self.__dosage,
-         "pieces": self.__pieces}
+         "pieces": self.__pieces
+         }
